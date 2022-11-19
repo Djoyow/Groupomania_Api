@@ -43,11 +43,12 @@ exports.creatPost = (req, res) => {
         {
             text,
             userId: req.auth.userId,
-            imageUrl:imageUrl
+            imageUrl:/*"https://res.cloudinary.com/dkdwhd7hl/image/upload/v1668873640/Groupomania/posts/post_" +postId+"."+*/ req.file.mimetype.split('/')[1],
+
+           // imageUrl:imageUrl
         }
     );
 
-    console.log("I'm saving");
 
     post.save()
         .then((post) => {
@@ -81,10 +82,14 @@ exports.updatePost=(req,res)=>{
             return res.status(401).json({message:"Unauthorized"});            
         }
 
+    // console.log("###file: ", req.file);
+
     // Get Object details 
     const postObject = req.file ? {
         text:text,
-        //imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        imageUrl:/*"https://res.cloudinary.com/dkdwhd7hl/image/upload/v1668873640/Groupomania/posts/post_" +postId+"."+*/ req.file.mimetype.split('/')[1],
+        // imageUrl= `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+
 
     } : { text:text};
 
@@ -94,7 +99,9 @@ exports.updatePost=(req,res)=>{
          // Save image on cloudinary
          if (req.file){
              saveImage.saveImage(req.file,postId)
-            .then(result=>{res.status(201).json({ message: "Post updated successfully" })})
+            .then(result=>{
+                 res.status(201).json({ message: "Post updated successfully" })
+            })
             .catch(e=>res.status(400).json({ e }))        
          }
          else{
