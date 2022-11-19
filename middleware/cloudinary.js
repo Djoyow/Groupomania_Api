@@ -16,7 +16,8 @@ exports.saveImage = (file,postId)=>{
     .upload('./images/'+file.filename, 
       { folder: "Groupomania/posts",
         public_id: "post_"+postId,
-        overwrite: true
+        overwrite: true,
+        invalidate:true
       }) 
 
 }
