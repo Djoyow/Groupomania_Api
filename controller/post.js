@@ -68,6 +68,7 @@ exports.updatePost=(req,res)=>{
 
     let data =JSON.parse(req.body.json);
     let text = data.text;
+    let postId= req.params.id;
 
     if ((text==null && !req.file) ) {
         return res.status(400).json( { "message": "bad request"});
@@ -83,12 +84,24 @@ exports.updatePost=(req,res)=>{
     // Get Object details 
     const postObject = req.file ? {
         text:text,
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        //imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
 
     } : { text:text};
 
     Post.updateOne({ _id: req.params.id},postObject)
-    .then(post=>{ res.status(201).json({ message: "Post updated successfully" })})
+    .then((post)=>{ 
+
+         // Save image on cloudinary
+         if (req.file){
+             saveImage.saveImage(req.file,postId)
+            .then(result=>{res.status(201).json({ message: "Post updated successfully" })})
+            .catch(e=>res.status(400).json({ e }))        
+         }
+         else{
+              res.status(201).json({ message: "Post updated successfully" });
+         }
+        
+    })
     .catch(e => { res.status(500).json({ e }) });
 
     })
