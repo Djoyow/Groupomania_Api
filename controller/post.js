@@ -1,5 +1,6 @@
 //const { findOne } = require('../bd/models/post');
 const Post = require('../bd/models/post');
+const saveImage = require('../middleware/cloudinary');
 
 exports.getPostes = (req, res) => {
 
@@ -37,7 +38,7 @@ exports.creatPost = (req, res) => {
     }
 
     //const text = req.body.text;
-
+  
     const post = new Post(
         {
             text,
@@ -46,9 +47,20 @@ exports.creatPost = (req, res) => {
         }
     );
 
+    console.log("I'm saving");
+
     post.save()
-        .then(() => { res.status(201).json({ message: "Post save successfully" }) })
+        .then((post) => {
+            
+            // Save image on cloudinary
+            saveImage.saveImage(req.file,post._id)
+            .then(result=>{res.status(201).json({ message: "Post save successfully" })})
+            .catch(e=>res.status(400).json({ e }));
+
+            
+         })
         .catch(e => res.status(400).json({ e }));
+
 
 }
 

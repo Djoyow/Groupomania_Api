@@ -3,6 +3,7 @@ const express = require('express');
 const postCtr = require('../controller/post');
 const auth = require('../middleware/auth');
 const multer = require('../middleware/multer-config');
+const cloudinary = require('../middleware/cloudinary')
 const router = express.Router();
 
 router.get('/',auth,postCtr.getPostes);
