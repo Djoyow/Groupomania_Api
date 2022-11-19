@@ -26,7 +26,7 @@ exports.creatPost = (req, res) => {
         let data =JSON.parse(req.body.json);
         text = data.text;
         if (req.file) {
-            imageUrl= `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+           // imageUrl= `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
         }
 
         if (!text) {
@@ -51,7 +51,7 @@ exports.creatPost = (req, res) => {
 
     post.save()
         .then((post) => {
-            
+
             // Save image on cloudinary
             saveImage.saveImage(req.file,post._id)
             .then(result=>{res.status(201).json({ message: "Post save successfully" })})

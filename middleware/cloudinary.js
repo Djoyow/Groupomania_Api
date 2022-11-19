@@ -3,13 +3,7 @@ const cloudinary = require('cloudinary').v2
 
 exports.saveImage = (file,postId)=>{
 
-  /*const FILEEXTANSION = {
-    'image/jpg':'jpg',
-    'image/jpeg':'jpg',
-    'image/png': 'png'
-  }*/
-  //console.log("req cloudinary: ",file);
-  
+   
   cloudinary.config({ 
     cloud_name: "dkdwhd7hl", 
     api_key: "546288598723421",
