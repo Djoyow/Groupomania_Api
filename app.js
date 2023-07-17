@@ -7,7 +7,7 @@ const userRoute = require('./routes/user');
 const postRoute=require('./routes/post');
 
 const app = express();
-app.use(cors())
+app.use(cors('*'));
 
 
 
