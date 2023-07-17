@@ -1,6 +1,9 @@
 const http = require('http');
 const app = require('./app');
 const bd = require('./bd/connect');
+const { Server }  = require("socket.io") ;
+const cors = require('cors')
+
 
 //const serverless = require('serverless-http')
 
@@ -17,7 +20,7 @@ const normalizePort = val => {
     }
     return false;
 };
-const port = normalizePort(process.env.PORT || '3002');
+const port = normalizePort(process.env.PORT || '8080');
 app.set('port', port);
 
 // errorHandler
@@ -40,8 +43,43 @@ const errorHandler = error => {
     }
 };
 
-const server = http.createServer(app);
+app.use(cors())
 
+
+const server = http.createServer(app);
+const io = new Server(server,{
+    cors:{
+        origin:"http://localhost:3001"
+    }
+});
+
+io.on("connection", (socket) => {
+
+    //console.log("socket: ",socket.id);
+
+    socket.on("join_room", (data)=>{
+        socket.join(data);
+        console.log("Joined: ",data);
+    });
+    
+    socket.on("send_message", (data) => {
+        console.log("Send_message: ",data);
+        socket.to(data.room).emit("receive_message",data);
+    });
+
+
+
+    //socket.on("dis")
+    
+    
+    //console.log("io.sockets.adapter.rooms:  ", socket.adapter); 
+
+  });
+
+
+/*io.on("connect_error", (err) => {
+    console.log("connect_error: ",err);
+  });*/
 
 server.on('error', errorHandler);
 server.on('listening', () => {

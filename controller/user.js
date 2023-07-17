@@ -78,8 +78,20 @@ exports.login = (req, res) => {
 }
 
 exports.getUserName = (req, res) => {
+
     User.findOne({ _id: req.params.userId })
-        .then(user => res.status(200).json(user.userName))
+        .then(user => {
+
+            res.status(200).json(user?user.userName:"anonyme")
+        })
+        .catch(error => {
+            console.log('error:',error);
+            res.status(400).json({ error })});
+}
+exports.getUserList = (req, res) => {
+    User.find()
+        .then(users => {
+            res.status(200).json(users)})
         .catch(error => {
             console.log('error:',error);
             res.status(400).json({ error })});

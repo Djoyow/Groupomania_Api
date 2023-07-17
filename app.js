@@ -1,7 +1,7 @@
 const express = require('express');
 const auth = require('./middleware/auth');
 const path = require('path');
-var cors = require('cors')
+const cors = require('cors')
 
 const userRoute = require('./routes/user');
 const postRoute=require('./routes/post');
