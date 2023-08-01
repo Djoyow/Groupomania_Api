@@ -23,5 +23,8 @@
     "password-validator": "^5.3.0",
     "serverless-http": "^3.1.0",
     "socket.io": "^4.5.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 }
