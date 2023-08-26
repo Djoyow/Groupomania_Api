@@ -6,7 +6,7 @@
 	"scripts": {
 		"start": "node dist/index.js",
 		"build": "tsc",
-		"dev": "ts-node --files src/index.ts"
+		"dev": "nodemon src/index.ts"
 	},
 	"author": "Teddy BENGOTO",
 	"license": "ISC",
