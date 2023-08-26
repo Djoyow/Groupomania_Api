@@ -12,33 +12,23 @@ interface AuthReqBody {
 }
 
 export function signup(req: Request, res: Response) {
-	// Create a schema
+	// Create a password validation schema
 	var schema = new passwordValidator()
 
 	// Add properties to it
 	schema
 		.is()
 		.min(8) // Minimum length 8
-		.is()
-		.max(100) // Maximum length 100
-		.has()
-		.uppercase() // Must have uppercase letters
-		.has()
-		.lowercase() // Must have lowercase letters
-		.has()
-		.digits(1) // Must have at least 1 digits
 		.has()
 		.not()
 		.spaces() // Should not have spaces
-		.has()
-		.symbols() // Must have symbols
 
-	const body = req.body as AuthReqBody | null
+	const body = req.body
 
 	if (body !== null && !schema.validate(body.password)) {
 		res.status(401).json({ message: 'Mot de passe incorrect' })
 	} else if (!validate(req.body.email)) {
-		res.status(401).json({ message: 'email incorrect' })
+		res.status(401).json({ message: 'Invalid Email' })
 	} else {
 		_hash(req.body.password, 10)
 			.then(hash => {
@@ -46,7 +36,7 @@ export function signup(req: Request, res: Response) {
 
 				user.save()
 					.then(user => {
-						res.status(201).json({ message: 'user creat successfully' })
+						res.status(201).json({ message: 'user created successfully' })
 					})
 					.catch(e => {
 						res.status(400).json({ e })
