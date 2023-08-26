@@ -1,10 +1,11 @@
-const http = require('http')
-const app = require('./app')
-const bd = require('./bd/connect')
-const { Server } = require('socket.io')
+import http from 'http'
+import { Server, Socket } from 'socket.io'
+
+import app from './expressapp'
+import DBSetup from './database/connect'
 
 // Get a normalized Port
-const normalizePort = val => {
+const normalizePort = (val: string) => {
 	const port = parseInt(val, 10)
 
 	if (isNaN(port)) {
@@ -18,10 +19,8 @@ const normalizePort = val => {
 const port = normalizePort(process.env.PORT || '5000')
 app.set('port', port)
 
-
-
-// errorHandler
-const errorHandler = error => {
+// errorHandler TODO: fix error type:
+const errorHandler = (error: { syscall: string; code: any }) => {
 	if (error.syscall !== 'listen') {
 		throw error
 	}
@@ -50,23 +49,23 @@ const io = new Server(server, {
 
 /**A Bi-Map for associating user ids and socket ids */
 class BiMap {
-	socketIds = {}
-	userIds = {}
+	socketIds: { [key: string]: string } = {}
+	userIds: { [key: string]: string } = {}
 
-	set(socketId, userId) {
+	set(socketId: string, userId: string): void {
 		this.socketIds[socketId] = userId
 		this.userIds[userId] = socketId
 	}
 
-	getBySocketId(k) {
+	getBySocketId(k: string): string | undefined {
 		return this.socketIds[k]
 	}
 
-	getByUserId(v) {
+	getByUserId(v: string): string | undefined {
 		return this.userIds[v]
 	}
 
-	removeBySocketId(socketId) {
+	removeBySocketId(socketId: string): void {
 		const userId = this.socketIds[socketId]
 		if (userId) {
 			delete this.socketIds[socketId]
@@ -74,18 +73,24 @@ class BiMap {
 		}
 	}
 
-	removeByUserId(userId) {
+	removeByUserId(userId: string): void {
 		const socketId = this.userIds[userId]
 		if (socketId) {
 			delete this.userIds[userId]
-			delete this.key[socketId]
+			delete this.socketIds[socketId]
 		}
 	}
 
-	hasUserId(userId) {
+	hasUserId(userId: string): boolean {
 		return this.userIds[userId] !== undefined
 	}
 }
+
+interface User {
+	userId: string
+}
+
+type OnlineUsers = { [k: string]: User }
 
 // a bi-map of user ID to socket ID.
 // useful for knowing if a user is online
@@ -93,10 +98,10 @@ const userSockets = new BiMap()
 
 // a map of user id to user details,
 // useful for resolving user ids their names
-const users = new Map()
+const users: Map<string, User> = new Map()
 
-function getOnlineUsers() {
-	const onlineUsers = {}
+function getOnlineUsers(): OnlineUsers {
+	const onlineUsers: OnlineUsers = {}
 	users.forEach((user, userId) => {
 		if (userSockets.hasUserId(userId)) onlineUsers[userId] = user
 	})
@@ -104,7 +109,7 @@ function getOnlineUsers() {
 	return onlineUsers
 }
 
-io.on('connection', socket => {
+io.on('connection', (socket: Socket) => {
 	socket.on('join', userDeets => {
 		console.log(`New Connection. Connection Id: ${socket.id}, User Id: ${userDeets.userId}`)
 		users.set(userDeets.userId, userDeets)
@@ -121,8 +126,8 @@ io.on('connection', socket => {
 
 		// we may want to report the delivery status of your message
 		if (receiverSocketId) {
-            console.log("receiver", receiverSocketId)
-            console.log('sending a message:', message.text)
+			console.log('receiver', receiverSocketId)
+			console.log('sending a message:', message.text)
 			io.to(receiverSocketId).emit('message', message)
 		}
 	})
@@ -148,4 +153,4 @@ function printPort() {
 }
 
 server.listen(port)
-bd.conect()
+DBSetup()
