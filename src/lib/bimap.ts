@@ -1,8 +1,7 @@
 type ViableKey = string | number
 
 /**
- * A space and time efficient map that keeps a bi-directional
- * association of keys and values
+ * A map that keeps a bi-directional association of values
  */
 export default class BiMap<K extends ViableKey> {
 	private ls: Set<K> = new Set()
@@ -47,14 +46,28 @@ export default class BiMap<K extends ViableKey> {
 		if (r) this.deAssoc(r)
 	}
 
+	/**
+	 * Returns an associated value for key provided or undefined if an association does not exist.
+	 * @param k
+	 * @returns
+	 */
 	get(k: K): K | undefined {
 		return this.map.get(k)
 	}
 
+	/**
+	 * Checks if a value has been associated
+	 * @param key
+	 * @returns
+	 */
 	has(key: K): boolean {
 		return this.map.has(key)
 	}
 
+	/**
+	 * Returns the associations as an array of tuples.
+	 * @returns
+	 */
 	entries(): Array<[K, K]> {
 		const entries: Array<[K, K]> = []
 
@@ -69,11 +82,7 @@ export default class BiMap<K extends ViableKey> {
 	}
 
 	toString(): string {
-		const p = []
-		for (let l of this.ls) {
-			p.push(`${l} <-> ${this.map.get(l)}`)
-		}
-
+		const p = [...this.ls].map(l => `${l} <-> ${this.map.get(l)}`)
 		return `BiMap(${p.join(', ')})`
 	}
 
