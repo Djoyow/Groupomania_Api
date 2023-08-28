@@ -39,6 +39,8 @@ const errorHandler = (error: { syscall: string; code: any }) => {
 }
 
 const server = http.createServer(app)
+
+// SETUP SOCKET SERVER
 socketSetup(server)
 
 // SERVER START UP
